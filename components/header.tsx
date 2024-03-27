@@ -73,15 +73,15 @@ const Header: React.FC<Props> = ({ children, className }) => {
         <div className="flex justify-between items-center gap-x-4">
           {user ? (
             <div className="flex gap-x-4 items-center">
-              <button onClick={handleLogout} className="bg-white px-6 py-2">
+              <Button onClick={handleLogout} className="bg-white px-6 py-2">
                 Logout
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => router.push("/account")}
                 className="bg-white"
               >
                 <FaUserAlt />
-              </button>
+              </Button>
             </div>
           ) : (
             <>
