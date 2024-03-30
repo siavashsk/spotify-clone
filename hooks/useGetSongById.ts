@@ -1,6 +1,5 @@
 import { Song } from "@/types";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { error } from "console";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -39,7 +38,7 @@ const useGetSongById = (id?: string) => {
       isLoading,
       song,
     }),
-    []
+    [isLoading, song]
   );
 };
 
