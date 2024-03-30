@@ -7,6 +7,8 @@ import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import Slider from "./slider";
+import usePlayer from "@/hooks/usePlayer";
+import { useState } from "react";
 
 interface Props {
   song: Song;
@@ -14,8 +16,27 @@ interface Props {
 }
 
 const PlayerContent: React.FC<Props> = ({ song, songUrl }) => {
-  const Icon = true ? BsPauseFill : BsPlayFill;
-  const VolumeIcon = true ? HiSpeakerXMark : HiSpeakerWave;
+  const player = usePlayer();
+  const [volume, setVolume] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
+
+  const onPlayNext = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
+
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
+    }
+
+    player.setId(nextSong);
+  };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
