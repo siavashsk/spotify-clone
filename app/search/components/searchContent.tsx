@@ -1,3 +1,5 @@
+"use client"
+
 import LikeButton from "@/components/likeButton";
 import MediaItem from "@/components/mediaItem";
 import useOnPlay from "@/hooks/useOnPlay";
