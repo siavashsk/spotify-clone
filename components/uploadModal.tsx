@@ -1,22 +1,25 @@
 "use client";
 
 import uniqid from "uniqid";
-import useUploadModal from "@/hooks/useUploadModal";
-import Modal from "./modal";
+import React, { useState } from "react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
+import useUploadModal from "@/hooks/useUploadModal";
+import { useUser } from "@/hooks/useUser";
+
+import Modal from "./modal";
 import Input from "./input";
 import Button from "./button";
-import toast from "react-hot-toast";
-import { useUser } from "@/hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/navigation";
 
 const UploadModal = () => {
   const [isLoading, setIsLoading] = useState(false);
+
   const uploadModal = useUploadModal();
+  const supabaseClient = useSupabaseClient();
   const { user } = useUser();
-  const superbaseClient = useSupabaseClient();
   const router = useRouter();
 
   const { register, handleSubmit, reset } = useForm<FieldValues>({
@@ -50,7 +53,7 @@ const UploadModal = () => {
       const uniqueID = uniqid();
 
       // Upload song
-      const { data: songData, error: songError } = await superbaseClient.storage
+      const { data: songData, error: songError } = await supabaseClient.storage
         .from("songs")
         .upload(`song-${values.title}-${uniqueID}`, songFile, {
           cacheControl: "3600",
@@ -64,7 +67,7 @@ const UploadModal = () => {
 
       // Upload image
       const { data: imageData, error: imageError } =
-        await superbaseClient.storage
+        await supabaseClient.storage
           .from("images")
           .upload(`image-${values.title}-${uniqueID}`, imageFile, {
             cacheControl: "3600",
@@ -76,7 +79,8 @@ const UploadModal = () => {
         return toast.error("Failed image upload");
       }
 
-      const { error: supabaseError } = await superbaseClient
+      // Create record
+      const { error: supabaseError } = await supabaseClient
         .from("songs")
         .insert({
           user_id: user.id,
@@ -87,7 +91,6 @@ const UploadModal = () => {
         });
 
       if (supabaseError) {
-        setIsLoading(false);
         return toast.error(supabaseError.message);
       }
 
@@ -110,7 +113,7 @@ const UploadModal = () => {
       isOpen={uploadModal.isOpen}
       onChange={onChange}
     >
-      <form className="flex flex-col gap-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
         <Input
           id="title"
           disabled={isLoading}
@@ -123,28 +126,29 @@ const UploadModal = () => {
           {...register("author", { required: true })}
           placeholder="Song author"
         />
-
         <div>
           <div className="pb-1">Select a song file</div>
           <Input
-            id="song"
-            type="file"
+            placeholder="test"
             disabled={isLoading}
+            type="file"
             accept=".mp3"
+            id="song"
             {...register("song", { required: true })}
           />
         </div>
         <div>
           <div className="pb-1">Select an image</div>
           <Input
-            id="image"
-            type="file"
+            placeholder="test"
             disabled={isLoading}
+            type="file"
             accept="image/*"
+            id="image"
             {...register("image", { required: true })}
           />
         </div>
-        <Button className="text-white" disabled={isLoading} type="submit">
+        <Button disabled={isLoading} type="submit" className="text-white">
           Create
         </Button>
       </form>
