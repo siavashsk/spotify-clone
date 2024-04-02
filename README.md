@@ -15,7 +15,7 @@ This is a repository for a Full Stack Spotify Clone with Next.js 13.4 App Router
 - Zustand - version 4.5.2
 - React Hook From - version  7.51.1
   
-🔥 Key Features:
+## 🔥 Key Features:
 
 - Song upload
 - Stripe integration
